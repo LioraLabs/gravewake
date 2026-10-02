@@ -53,8 +53,9 @@ export function startInput(el: HTMLElement, h: InputHooks) {
     if (move?.id === e.pointerId) move = null;
     if (aim?.id === e.pointerId) aim = null;
   };
-  const kd = (e: KeyboardEvent) => { keys.add(e.key.toLowerCase()); };
-  const ku = (e: KeyboardEvent) => { keys.delete(e.key.toLowerCase()); };
+  // Physical key positions, so WASD is ZQSD on AZERTY.
+  const kd = (e: KeyboardEvent) => { keys.add(e.code); };
+  const ku = (e: KeyboardEvent) => { keys.delete(e.code); };
   const blur = () => { keys.clear(); move = aim = null; mouse.down = false; };
   el.addEventListener('pointerdown', down);
   window.addEventListener('pointermove', moveEv);
@@ -81,7 +82,7 @@ export function readInput(): Input {
   let mx = 0, my = 0, a: Input['aim'] = null;
   if (move) ({ x: mx, y: my } = vec(move));
   const k = (...names: string[]) => names.some((n) => keys.has(n));
-  const kx = (k('d', 'arrowright') ? 1 : 0) - (k('a', 'arrowleft') ? 1 : 0), ky = (k('s', 'arrowdown') ? 1 : 0) - (k('w', 'arrowup') ? 1 : 0);
+  const kx = (k('KeyD', 'ArrowRight') ? 1 : 0) - (k('KeyA', 'ArrowLeft') ? 1 : 0), ky = (k('KeyS', 'ArrowDown') ? 1 : 0) - (k('KeyW', 'ArrowUp') ? 1 : 0);
   if (kx || ky) { const l = Math.hypot(kx, ky); mx = kx / l; my = ky / l; }
   if (aim) a = vec(aim);
   else if (mouse.down) { const s = hooks.wizard(), dx = mouse.x - s.x, dy = mouse.y - s.y, l = Math.hypot(dx, dy) || 1; a = { x: dx / l, y: dy / l }; }
